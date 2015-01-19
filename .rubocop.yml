@@ -1,0 +1,5 @@
+Style/Documentation:
+  Enabled: false
+
+Style/RegexpLiteral:
+  MaxSlashes: 0
