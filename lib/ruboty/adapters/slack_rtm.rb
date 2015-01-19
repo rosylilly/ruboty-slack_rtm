@@ -86,7 +86,7 @@ module Ruboty
 
       def on_channel_change(data)
         channel_id = data['channel']
-        channel_id = channel_id['id'] if channel_id.kind_of?(Hash)
+        channel_id = channel_id['id'] if channel_id.is_a?(Hash)
         @channel_info_cahces[channel_id] = nil
       end
       alias_method :on_channel_deleted, :on_channel_change
