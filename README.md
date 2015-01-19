@@ -1,6 +1,6 @@
 # Ruboty::SlackRTM
 
-Slack(with real time api) adapter for [ruboty](https://github.com/r7kamura/ruboty).
+Slack(real time api) adapter for [ruboty](https://github.com/r7kamura/ruboty).
 
 ## Installation
 
