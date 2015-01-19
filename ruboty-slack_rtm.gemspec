@@ -5,7 +5,7 @@ require 'ruboty/slack_rtm/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'ruboty-slack_rtm'
-  spec.version       = Ruboty::SlackRtm::VERSION
+  spec.version       = Ruboty::SlackRTM::VERSION
   spec.authors       = ['Sho Kusano']
   spec.email         = ['rosylilly@aduca.org']
   spec.summary       = 'TODO: Write a short summary. Required.'

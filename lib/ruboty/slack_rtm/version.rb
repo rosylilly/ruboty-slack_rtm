@@ -1,5 +1,5 @@
 module Ruboty
-  module SlackRtm
+  module SlackRTM
     VERSION = '0.0.1'
   end
 end

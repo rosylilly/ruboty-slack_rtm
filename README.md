@@ -1,4 +1,4 @@
-# Ruboty::SlackRtm
+# Ruboty::SlackRTM
 
 TODO: Write a gem description
 
