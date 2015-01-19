@@ -1,6 +1,6 @@
 # Ruboty::SlackRTM
 
-TODO: Write a gem description
+Slack(with real time api) adapter for [ruboty](https://github.com/r7kamura/ruboty).
 
 ## Installation
 
@@ -10,21 +10,19 @@ Add this line to your application's Gemfile:
 gem 'ruboty-slack_rtm'
 ```
 
-And then execute:
+## ENV
 
-    $ bundle
+```
+SLACK_TOKEN - Account's token. get one on https://api.slack.com/web#basics
+```
 
-Or install it yourself as:
+Do not requires real user account. using with bot is recommended.
 
-    $ gem install ruboty-slack_rtm
-
-## Usage
-
-TODO: Write usage instructions here
+see: https://api.slack.com/bot-users
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/ruboty-slack_rtm/fork )
+1. Fork it ( https://github.com/rosylilly/ruboty-slack_rtm/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
