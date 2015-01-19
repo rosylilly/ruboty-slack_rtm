@@ -80,6 +80,7 @@ module Ruboty
           to: data['channel'],
           channel: channel_info(data['channel']),
           user: user,
+          mention_to: data['mention_to'],
           time: Time.at(data['ts'].to_f)
         )
       end
@@ -106,7 +107,7 @@ module Ruboty
 
         data['mention_to'] = []
 
-        data['text'].gsub!(/\<\@(?<uid>[0-9A-Z]+)\>/) do |_|
+        (data['text'] || '').gsub!(/\<\@(?<uid>[0-9A-Z]+)\>/) do |_|
           user = user_info(Regexp.last_match[:uid])
 
           data['mention_to'] << user
