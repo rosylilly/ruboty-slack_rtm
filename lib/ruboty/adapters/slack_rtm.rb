@@ -74,7 +74,7 @@ module Ruboty
 
       def on_message(data)
         data = resolve_mention!(data)
-        user = user_info(data['user'])
+        user = user_info(data['user']) || {}
 
         robot.receive(
           body: data['text'],
@@ -199,6 +199,8 @@ module Ruboty
       end
 
       def user_info(user_id)
+        return {} if user_id.to_s.empty?
+
         @user_info_caches[user_id] ||= begin
           resp = client.users_info(user: user_id)
 
