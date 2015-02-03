@@ -18,7 +18,7 @@ module Ruboty
         realtime.send(
           type: 'message',
           channel: message[:to],
-          text: message[:code] ?  "```\n#{message[:body]}\n```" : message[:body],
+          text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
           mrkdwn: true
         )
       end
@@ -31,6 +31,9 @@ module Ruboty
         @channel_info_cahces = {}
 
         ENV['RUBOTY_NAME'] ||= response['user']
+
+        make_users_cache
+        make_channels_cache
       end
 
       def bind
@@ -86,9 +89,7 @@ module Ruboty
       end
 
       def on_channel_change(data)
-        channel_id = data['channel']
-        channel_id = channel_id['id'] if channel_id.is_a?(Hash)
-        @channel_info_cahces[channel_id] = nil
+        make_channels_cache
       end
       alias_method :on_channel_deleted, :on_channel_change
       alias_method :on_channel_renamed, :on_channel_change
@@ -107,15 +108,94 @@ module Ruboty
 
         data['mention_to'] = []
 
-        (data['text'] || '').gsub!(/\<\@(?<uid>[0-9A-Z]+)\>/) do |_|
-          user = user_info(Regexp.last_match[:uid])
+        data['text'] = (data['text'] || '').gsub(/\<\@(?<uid>[0-9A-Z]+)(?:\|(?<name>[^>]+))?\>/) do |_|
+          name = Regexp.last_match[:name]
 
-          data['mention_to'] << user
+          unless name
+            user = user_info(Regexp.last_match[:uid])
 
-          "@#{user['name']}"
+            data['mention_to'] << user
+
+            name = user['name']
+          end
+
+          "@#{name}"
+        end
+
+        data['text'].gsub!(/\<!(?<special>[^>]+)\>/) do |_|
+          "@#{Regexp.last_match[:special]}"
+        end
+
+        data['text'].gsub!(/\<((?<link>[^>|]+)(?:\|(?<ref>[^>]*))?)\>/) do |_|
+          Regexp.last_match[:ref] || Regexp.last_match[:link]
+        end
+
+
+        data['text'].gsub!(/\#(?<room_id>[A-Z0-9]+)/) do |_|
+          room_id = Regexp.last_match[:room_id]
+          msg = "##{room_id}"
+
+          if channel = channel_info(room_id)
+            msg = "##{channel['name']}"
+          end
+
+          msg
         end
 
         data
+      end
+
+      def resolve_send_mention(text)
+        text = text.to_s
+        text.gsub!(/@(?<mention>[0-9a-z_-]+)/) do |_|
+          mention = Regexp.last_match[:mention]
+          msg = "@#{mention}"
+
+          @user_info_caches.each_pair do |id, user|
+            if user['name'].downcase == mention.downcase
+              msg = "<@#{id}|#{mention}>"
+            end
+          end
+
+          msg
+        end
+
+        text.gsub!(/@(?<special>(?:everyone|group|channel))/) do |_|
+          "<!#{Regexp.last_match[:special]}>"
+        end
+
+        text.gsub!(/\#(?<room_id>[a-z0-9_-]+)/) do |_|
+          room_id = Regexp.last_match[:room_id]
+          msg = "##{room_id}"
+
+          @channel_info_cahces.each_pair do |id, channel|
+            if channel && channel['name'] == room_id
+              msg = "<##{id}|#{room_id}>"
+            end
+          end
+
+          msg
+        end
+
+        text
+      end
+
+      def make_users_cache
+        resp = client.users_list
+        if resp['ok']
+          resp['members'].each do |user|
+            @user_info_caches[user['id']] = user
+          end
+        end
+      end
+
+      def make_channels_cache
+        resp = client.channels_list
+        if resp['ok']
+          resp['channels'].each do |channel|
+            @channel_info_cahces[channel['id']] = channel
+          end
+        end
       end
 
       def user_info(user_id)
