@@ -28,7 +28,7 @@ module Ruboty
       def init
         response = client.auth_test
         @user_info_caches = {}
-        @channel_info_cahces = {}
+        @channel_info_caches = {}
 
         ENV['RUBOTY_NAME'] ||= response['user']
 
@@ -168,7 +168,7 @@ module Ruboty
           room_id = Regexp.last_match[:room_id]
           msg = "##{room_id}"
 
-          @channel_info_cahces.each_pair do |id, channel|
+          @channel_info_caches.each_pair do |id, channel|
             if channel && channel['name'] == room_id
               msg = "<##{id}|#{room_id}>"
             end
@@ -193,7 +193,7 @@ module Ruboty
         resp = client.channels_list
         if resp['ok']
           resp['channels'].each do |channel|
-            @channel_info_cahces[channel['id']] = channel
+            @channel_info_caches[channel['id']] = channel
           end
         end
       end
@@ -209,7 +209,7 @@ module Ruboty
       end
 
       def channel_info(channel_id)
-        @channel_info_cahces[channel_id] ||= begin
+        @channel_info_caches[channel_id] ||= begin
           resp = case channel_id
             when /^C/
               client.channels_info(channel: channel_id)
