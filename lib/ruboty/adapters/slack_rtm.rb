@@ -15,9 +15,16 @@ module Ruboty
       end
 
       def say(message)
+        channel = message[:to]
+        if channel[0] == '#'
+          channel = resolve_channel_id(channel[1..-1])
+        end
+
+        return unless channel
+
         realtime.send(
           type: 'message',
-          channel: message[:to],
+          channel: channel,
           text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
           mrkdwn: true
         )
@@ -219,6 +226,17 @@ module Ruboty
 
           resp['channel']
         end
+      end
+
+      def resolve_channel_id(name)
+        ret_id = nil
+        @channel_info_cahces.each_pair do |id, channel|
+          if channel['name'] == name
+            ret_id = id
+            break
+          end
+        end
+        return ret_id
       end
     end
   end
