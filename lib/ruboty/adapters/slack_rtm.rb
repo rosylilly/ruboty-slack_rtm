@@ -7,6 +7,7 @@ module Ruboty
   module Adapters
     class SlackRTM < Base
       env :SLACK_TOKEN, "Account's token. get one on https://api.slack.com/web#basics"
+      env :SLACK_EXPOSE_CHANNEL_NAME_AS_FROM, "if this set to 1, message.from will be channel name instead of id", optional: true
 
       def run
         init
@@ -73,6 +74,14 @@ module Ruboty
         @realtime ||= ::SlackRTM::Client.new(websocket_url: url)
       end
 
+      def expose_channel_name_as_from?
+        if @expose_channel_name_as_from.nil?
+          @expose_channel_name_as_from = ENV['SLACK_EXPOSE_CHANNEL_NAME_AS_FROM'] == '1'
+        else
+          @expose_channel_name_as_from
+        end
+      end
+
       def set_active
         client.users_setActive
       end
@@ -83,12 +92,15 @@ module Ruboty
         data = resolve_mention!(data)
         user = user_info(data['user']) || {}
 
+        channel = channel_info(data['channel'])
+        channel_from = expose_channel_name_as_from? ? "##{channel['name']}" : channel['id']
+
         robot.receive(
           body: data['text'],
-          from: data['channel'],
+          from: channel_from,
           from_name: user['name'],
           to: data['channel'],
-          channel: channel_info(data['channel']),
+          channel: channel,
           user: user,
           mention_to: data['mention_to'],
           time: Time.at(data['ts'].to_f)
