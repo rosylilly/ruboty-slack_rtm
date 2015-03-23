@@ -13,7 +13,7 @@ gem 'ruboty-slack_rtm'
 ## ENV
 
 - `SLACK_TOKEN`: Account's token. get one on https://api.slack.com/web#basics
-- `SLACK_EXPOSE_CHANNEL_NAME_AS_FROM`: if this set to 1, `message.from` will be channel name instead of id (optional)
+- `SLACK_EXPOSE_CHANNEL_NAME`: if this set to 1, `message.to` will be channel name instead of id (optional)
 
 This adapter doesn't require a real user account. Using with bot integration's API token is recommended.
 See: https://api.slack.com/bot-users
