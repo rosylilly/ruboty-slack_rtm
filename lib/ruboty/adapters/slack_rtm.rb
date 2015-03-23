@@ -93,7 +93,11 @@ module Ruboty
         user = user_info(data['user']) || {}
 
         channel = channel_info(data['channel'])
-        channel_to = expose_channel_name? ? "##{channel['name']}" : channel['id']
+        if channel
+          channel_to = expose_channel_name? ? "##{channel['name']}" : channel['id']
+        else # direct message
+          channel_to = data['channel']
+        end
 
         robot.receive(
           body: data['text'],
