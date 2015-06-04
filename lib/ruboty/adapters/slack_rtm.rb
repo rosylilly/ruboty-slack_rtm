@@ -1,3 +1,4 @@
+require 'cgi'
 require 'time'
 require 'slack'
 require 'slack-rtmapi'
@@ -100,7 +101,7 @@ module Ruboty
         end
 
         robot.receive(
-          body: data['text'],
+          body: CGI.unescapeHTML(data['text']),
           from: data['channel'],
           from_name: user['name'],
           to: channel_to,
