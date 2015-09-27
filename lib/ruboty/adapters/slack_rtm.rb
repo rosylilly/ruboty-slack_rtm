@@ -10,6 +10,7 @@ module Ruboty
       env :SLACK_TOKEN, "Account's token. get one on https://api.slack.com/web#basics"
       env :SLACK_EXPOSE_CHANNEL_NAME, "if this set to 1, message.to will be channel name instead of id", optional: true
       env :SLACK_IGNORE_GENERAL, "if this set to 1, bot ignores all messages on #general channel", optional: true
+      env :SLACK_GENERAL_NAME, "Set general channel name if your Slack changes general name", optional: true
 
       def run
         init
@@ -97,7 +98,7 @@ module Ruboty
         channel = channel_info(data['channel'])
 
         if channel
-          return if channel['name'] == 'general' && ENV['SLACK_IGNORE_GENERAL'] == '1'
+          return if channel['name'] == (ENV['SLACK_GENERAL_NAME'] || 'general') && ENV['SLACK_IGNORE_GENERAL'] == '1'
 
           channel_to = expose_channel_name? ? "##{channel['name']}" : channel['id']
         else # direct message
