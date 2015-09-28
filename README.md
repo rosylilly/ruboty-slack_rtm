@@ -15,6 +15,7 @@ gem 'ruboty-slack_rtm'
 - `SLACK_TOKEN`: Account's token. get one on https://api.slack.com/web#basics
 - `SLACK_EXPOSE_CHANNEL_NAME`: if this set to 1, `message.to` will be channel name instead of id (optional)
 - `SLACK_IGNORE_GENERAL`: if this set to 1, bot ignores all messages on #general channel (optional)
+- `SLACK_GENERAL_NAME`: Set general channel name if your Slack changes general name (optional)
 
 This adapter doesn't require a real user account. Using with bot integration's API token is recommended.
 See: https://api.slack.com/bot-users
