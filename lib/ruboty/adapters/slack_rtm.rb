@@ -151,7 +151,7 @@ module Ruboty
           "@#{name}"
         end
 
-        data['text'].gsub!(/\<!(?<special>[^>]+)\>/) do |_|
+        data['text'].gsub!(/\<!(?<special>[^>|@]+)(\|\@[^>]+)?\>/) do |_|
           "@#{Regexp.last_match[:special]}"
         end
 
@@ -189,7 +189,7 @@ module Ruboty
           msg
         end
 
-        text.gsub!(/@(?<special>(?:everyone|group|channel))/) do |_|
+        text.gsub!(/@(?<special>(?:everyone|group|channel|here))/) do |_|
           "<!#{Regexp.last_match[:special]}>"
         end
 
