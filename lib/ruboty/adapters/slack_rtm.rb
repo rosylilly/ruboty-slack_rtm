@@ -205,6 +205,18 @@ module Ruboty
           "<!#{Regexp.last_match[:special]}>"
         end
 
+        text.gsub!(/@(?<subteam_name>[0-9a-z._-]+)/) do |_|
+          subteam_name = Regexp.last_match[:subteam_name]
+          msg = "@#{subteam_name}"
+
+          @usergroup_info_caches.each_pair do |id, usergroup|
+            if usergroup && usergroup['handle'] == subteam_name
+              msg = "<!subteam^#{usergroup['id']}>"
+            end
+          end
+          msg
+        end
+
         text.gsub!(/\#(?<room_id>[a-z0-9_-]+)/) do |_|
           room_id = Regexp.last_match[:room_id]
           msg = "##{room_id}"
