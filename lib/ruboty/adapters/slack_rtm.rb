@@ -40,11 +40,13 @@ module Ruboty
         response = client.auth_test
         @user_info_caches = {}
         @channel_info_caches = {}
+        @usergroup_info_caches = {}
 
         ENV['RUBOTY_NAME'] ||= response['user']
 
         make_users_cache
         make_channels_cache
+        make_usergroups_cache
       end
 
       def bind
@@ -151,6 +153,16 @@ module Ruboty
           "@#{name}"
         end
 
+        data['text'].gsub!(/\<!subteam\^(?<usergroup_id>[0-9A-Z]+)(?:\|(?<handle>[^>]+))?\>/) do |_|
+          handle = Regexp.last_match[:handle]
+
+          unless handle
+            handle = usergroup_info(Regexp.last_match[:usergroup_id])
+          end
+
+          "#{handle}"
+        end
+
         data['text'].gsub!(/\<!(?<special>[^>|@]+)(\|\@[^>]+)?\>/) do |_|
           "@#{Regexp.last_match[:special]}"
         end
@@ -227,6 +239,15 @@ module Ruboty
         end
       end
 
+      def make_usergroups_cache
+        resp = client.get("usergroups.list")
+        if resp['ok']
+          resp['usergroups'].each do |usergroup|
+            @usergroup_info_caches[usergroup['id']] = usergroup
+          end
+        end
+      end
+
       def user_info(user_id)
         return {} if user_id.to_s.empty?
 
@@ -259,6 +280,12 @@ module Ruboty
           end
         end
         return ret_id
+      end
+
+      def usergroup_info(usergroup_id)
+        @usergroup_info_caches[usergroup_id] ||= begin
+          make_usergroups_cache
+        end
       end
     end
   end
