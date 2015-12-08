@@ -295,8 +295,9 @@ module Ruboty
       end
 
       def usergroup_info(usergroup_id)
-        @usergroup_info_caches[usergroup_id] ||= begin
+        @usergroup_info_caches[usergroup_id] || begin
           make_usergroups_cache
+          @usergroup_info_caches[usergroup_id]
         end
       end
     end
