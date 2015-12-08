@@ -40,11 +40,13 @@ module Ruboty
         response = client.auth_test
         @user_info_caches = {}
         @channel_info_caches = {}
+        @usergroup_info_caches = {}
 
         ENV['RUBOTY_NAME'] ||= response['user']
 
         make_users_cache
         make_channels_cache
+        make_usergroups_cache
       end
 
       def bind
@@ -151,6 +153,16 @@ module Ruboty
           "@#{name}"
         end
 
+        data['text'].gsub!(/\<!subteam\^(?<usergroup_id>[0-9A-Z]+)(?:\|(?<handle>[^>]+))?\>/) do |_|
+          handle = Regexp.last_match[:handle]
+
+          unless handle
+            handle = usergroup_info(Regexp.last_match[:usergroup_id])
+          end
+
+          "#{handle}"
+        end
+
         data['text'].gsub!(/\<!(?<special>[^>|@]+)(\|\@[^>]+)?\>/) do |_|
           "@#{Regexp.last_match[:special]}"
         end
@@ -193,6 +205,18 @@ module Ruboty
           "<!#{Regexp.last_match[:special]}>"
         end
 
+        text.gsub!(/@(?<subteam_name>[0-9a-z._-]+)/) do |_|
+          subteam_name = Regexp.last_match[:subteam_name]
+          msg = "@#{subteam_name}"
+
+          @usergroup_info_caches.each_pair do |id, usergroup|
+            if usergroup && usergroup['handle'] == subteam_name
+              msg = "<!subteam^#{usergroup['id']}>"
+            end
+          end
+          msg
+        end
+
         text.gsub!(/\#(?<room_id>[a-z0-9_-]+)/) do |_|
           room_id = Regexp.last_match[:room_id]
           msg = "##{room_id}"
@@ -223,6 +247,15 @@ module Ruboty
         if resp['ok']
           resp['channels'].each do |channel|
             @channel_info_caches[channel['id']] = channel
+          end
+        end
+      end
+
+      def make_usergroups_cache
+        resp = client.get("usergroups.list")
+        if resp['ok']
+          resp['usergroups'].each do |usergroup|
+            @usergroup_info_caches[usergroup['id']] = usergroup
           end
         end
       end
@@ -259,6 +292,13 @@ module Ruboty
           end
         end
         return ret_id
+      end
+
+      def usergroup_info(usergroup_id)
+        @usergroup_info_caches[usergroup_id] || begin
+          make_usergroups_cache
+          @usergroup_info_caches[usergroup_id]
+        end
       end
     end
   end
