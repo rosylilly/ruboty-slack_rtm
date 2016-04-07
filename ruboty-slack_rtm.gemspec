@@ -23,6 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', '>= 0.28.0'
 
   spec.add_dependency 'ruboty', '>= 1.1.4'
-  spec.add_dependency 'slack-api', '~> 1.0.0'
+  spec.add_dependency 'slack-api', '~> 1.2'
   spec.add_dependency 'websocket-client-simple', '~> 0.3.0'
 end
