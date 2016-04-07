@@ -1,7 +1,6 @@
 require 'cgi'
 require 'time'
 require 'slack'
-require 'slack-rtmapi'
 require 'ruboty/adapters/base'
 
 module Ruboty
@@ -76,7 +75,7 @@ module Ruboty
       end
 
       def realtime
-        @realtime ||= ::SlackRTM::Client.new(websocket_url: url)
+        @realtime ||= ::Ruboty::SlackRTM::Client.new(websocket_url: url)
       end
 
       def expose_channel_name?
