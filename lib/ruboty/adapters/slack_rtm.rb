@@ -1,7 +1,6 @@
 require 'cgi'
 require 'time'
 require 'slack'
-require 'slack-rtmapi'
 require 'ruboty/adapters/base'
 
 module Ruboty
@@ -68,7 +67,12 @@ module Ruboty
       end
 
       def url
-        @url ||= ::SlackRTM.get_url(token: ENV['SLACK_TOKEN'])
+        @url ||= begin
+          response = Net::HTTP.post_form(URI.parse('https://slack.com/api/rtm.start'), token: ENV['SLACK_TOKEN'])
+          body = JSON.parse(response.body)
+
+          URI.parse(body['url'])
+        end
       end
 
       def client
@@ -76,7 +80,7 @@ module Ruboty
       end
 
       def realtime
-        @realtime ||= ::SlackRTM::Client.new(websocket_url: url)
+        @realtime ||= ::Ruboty::SlackRTM::Client.new(websocket_url: url)
       end
 
       def expose_channel_name?
