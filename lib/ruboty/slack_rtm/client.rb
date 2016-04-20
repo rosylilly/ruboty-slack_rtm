@@ -21,9 +21,22 @@ module Ruboty
       end
 
       def main_loop
+        keep_connection
+
         loop do
           message = @queue.deq
           @client.send(message)
+        end
+      end
+
+      private
+
+      def keep_connection
+        Thread.start do
+          loop do
+            sleep(30)
+            @client.send(type: 'ping')
+          end
         end
       end
     end
