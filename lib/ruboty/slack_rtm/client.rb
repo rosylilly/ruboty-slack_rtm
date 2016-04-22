@@ -5,7 +5,8 @@ module Ruboty
   module SlackRTM
     class Client
       def initialize(websocket_url:)
-        @client = WebSocket::Client::Simple.connect(websocket_url.to_s)
+        @client = create_client(websocket_url.to_s)
+
         @queue = Queue.new
       end
 
@@ -30,6 +31,14 @@ module Ruboty
       end
 
       private
+
+      def create_client(url)
+        WebSocket::Client::Simple.connect(url).tap do |client|
+          client.on(:error) do |err|
+            Ruboty.logger.error("#{err.class}: #{err.message}\n#{err.backtrace.join("\n")}")
+          end
+        end
+      end
 
       def keep_connection
         Thread.start do
