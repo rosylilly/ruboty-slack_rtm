@@ -17,7 +17,17 @@ module Ruboty
 
       def on(event, &block)
         @client.on(event) do |message|
-          block.call(JSON.parse(message.data))
+          case message.type
+          when :ping
+            Ruboty.logger.debug("#{Client.name}: Received ping message")
+            send('', type: 'pong')
+          when :pong
+            Ruboty.logger.debug("#{Client.name}: Received pong message")
+          when :text
+            block.call(JSON.parse(message.data))
+          else
+            Ruboty.logger.warn("#{Client.name}: Received unknown message type=#{message.type}: #{message.data}")
+          end
         end
       end
 
