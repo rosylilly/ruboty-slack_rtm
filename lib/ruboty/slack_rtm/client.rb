@@ -44,7 +44,7 @@ module Ruboty
         Thread.start do
           loop do
             sleep(30)
-            @client.send(type: 'ping')
+            @client.send('', type: 'ping')
           end
         end
       end
