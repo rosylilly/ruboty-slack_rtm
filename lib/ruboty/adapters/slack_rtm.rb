@@ -289,7 +289,7 @@ module Ruboty
 
       def resolve_channel_id(name)
         ret_id = nil
-        @channel_info_cahces.each_pair do |id, channel|
+        @channel_info_caches.each_pair do |id, channel|
           if channel['name'] == name
             ret_id = id
             break
