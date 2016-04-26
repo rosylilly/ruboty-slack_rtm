@@ -10,7 +10,7 @@ module Ruboty
         @queue = Queue.new
       end
 
-      def send(data)
+      def send_message(data)
         data[:id] = Time.now.to_i * 10 + rand(10)
         @queue.enq(data.to_json)
       end

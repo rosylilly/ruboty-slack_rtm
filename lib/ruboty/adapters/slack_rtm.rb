@@ -25,7 +25,7 @@ module Ruboty
 
         return unless channel
 
-        realtime.send(
+        realtime.send_message(
           type: 'message',
           channel: channel,
           text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
