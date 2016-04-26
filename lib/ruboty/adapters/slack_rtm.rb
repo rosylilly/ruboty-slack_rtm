@@ -49,7 +49,7 @@ module Ruboty
       end
 
       def bind
-        realtime.on(:message) do |data|
+        realtime.on_text do |data|
           method_name = "on_#{data['type']}".to_sym
           send(method_name, data) if respond_to?(method_name, true)
         end

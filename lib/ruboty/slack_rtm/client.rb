@@ -15,8 +15,8 @@ module Ruboty
         @queue.enq(data.to_json)
       end
 
-      def on(event, &block)
-        @client.on(event) do |message|
+      def on_text(&block)
+        @client.on(:message) do |message|
           case message.type
           when :ping
             Ruboty.logger.debug("#{Client.name}: Received ping message")
