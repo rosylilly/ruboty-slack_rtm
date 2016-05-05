@@ -8,6 +8,7 @@ module Ruboty
     class SlackRTM < Base
       env :SLACK_TOKEN, "Account's token. get one on https://api.slack.com/web#basics"
       env :SLACK_EXPOSE_CHANNEL_NAME, "if this set to 1, message.to will be channel name instead of id", optional: true
+      env :SLACK_IGNORE_BOT_MESSAGE, "If this set to 1, bot ignores bot_messages", optional: true
       env :SLACK_IGNORE_GENERAL, "if this set to 1, bot ignores all messages on #general channel", optional: true
       env :SLACK_GENERAL_NAME, "Set general channel name if your Slack changes general name", optional: true
 
@@ -102,6 +103,10 @@ module Ruboty
         user = user_info(data['user']) || {}
 
         channel = channel_info(data['channel'])
+
+        if data['type'] == 'bot_message' && ENV['SLACK_IGNORE_BOT_MESSAGE'] == '1'
+          return
+        end
 
         if channel
           return if channel['name'] == (ENV['SLACK_GENERAL_NAME'] || 'general') && ENV['SLACK_IGNORE_GENERAL'] == '1'
