@@ -116,8 +116,7 @@ module Ruboty
           channel_to = data['channel']
         end
 
-        robot.receive(
-          body: CGI.unescapeHTML(data['text']),
+        message_info = {
           from: data['channel'],
           from_name: user['name'],
           to: channel_to,
@@ -125,33 +124,14 @@ module Ruboty
           user: user,
           mention_to: data['mention_to'],
           time: Time.at(data['ts'].to_f)
-        )
+        }
+
+        robot.receive(message_info.merge(body: CGI.unescapeHTML(data['text']))
 
         (data['attachments'] || []).each do |attachment|
-          pretext = attachment['pretext'].to_s
-          text = attachment['text'].to_s
+          body = (attachments['fallback'] || "#{attachment['text']} #{attachment['pretext']}").to_s
 
-          robot.receive(
-            body: CGI.unescapeHTML(pretext),
-            from: data['channel'],
-            from_name: user['name'],
-            to: channel_to,
-            channel: channel,
-            user: user,
-            mention_to: data['mention_to'],
-            time: Time.at(data['ts'].to_f)
-          ) if pretext.size > 0
-
-          robot.receive(
-            body: CGI.unescapeHTML(text),
-            from: data['channel'],
-            from_name: user['name'],
-            to: channel_to,
-            channel: channel,
-            user: user,
-            mention_to: data['mention_to'],
-            time: Time.at(data['ts'].to_f)
-          ) if text.size > 0
+          robot.receive(message_info.merge(body: CGI.unescapeHTML(body)) unless text.empty?
         end
       end
 
