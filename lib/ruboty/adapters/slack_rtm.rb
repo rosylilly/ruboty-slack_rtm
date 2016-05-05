@@ -126,12 +126,12 @@ module Ruboty
           time: Time.at(data['ts'].to_f)
         }
 
-        robot.receive(message_info.merge(body: CGI.unescapeHTML(data['text']))
+        robot.receive(message_info.merge(body: CGI.unescapeHTML(data['text'])))
 
         (data['attachments'] || []).each do |attachment|
           body = (attachments['fallback'] || "#{attachment['text']} #{attachment['pretext']}")
 
-          robot.receive(message_info.merge(body: CGI.unescapeHTML(body)) unless body.empty?
+          robot.receive(message_info.merge(body: CGI.unescapeHTML(body))) unless body.empty?
         end
       end
 
