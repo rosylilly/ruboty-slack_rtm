@@ -99,7 +99,6 @@ module Ruboty
       # event handlers
 
       def on_message(data)
-        data = resolve_mention!(data)
         user = user_info(data['user']) || {}
 
         channel = channel_info(data['channel'])
@@ -122,16 +121,18 @@ module Ruboty
           to: channel_to,
           channel: channel,
           user: user,
-          mention_to: data['mention_to'],
           time: Time.at(data['ts'].to_f)
         }
 
-        robot.receive(message_info.merge(body: CGI.unescapeHTML(data['text'])))
+        text, mention_to = extract_mention(data['text'])
+        robot.receive(message_info.merge(body: text, mention_to: mention_to))
 
         (data['attachments'] || []).each do |attachment|
-          body = attachment['fallback'] || "#{attachment['text']} #{attachment['pretext']}"
+          body, body_mention_to = extract_mention(attachment['fallback'] || "#{attachment['text']} #{attachment['pretext']}".strip)
 
-          robot.receive(message_info.merge(body: CGI.unescapeHTML(body))) unless body.empty?
+          unless body.empty?
+            robot.receive(message_info.merge(body: body, mention_to: body_mention_to))
+          end
         end
       end
 
@@ -150,18 +151,16 @@ module Ruboty
       alias_method :on_bot_added, :on_user_change
       alias_method :on_bot_changed, :on_user_change
 
-      def resolve_mention!(data)
-        data = data.dup
+      def extract_mention(text)
+        mention_to = []
 
-        data['mention_to'] = []
-
-        data['text'] = (data['text'] || '').gsub(/\<\@(?<uid>[0-9A-Z]+)(?:\|(?<name>[^>]+))?\>/) do |_|
+        text = (text || '').gsub(/\<\@(?<uid>[0-9A-Z]+)(?:\|(?<name>[^>]+))?\>/) do |_|
           name = Regexp.last_match[:name]
 
           unless name
             user = user_info(Regexp.last_match[:uid])
 
-            data['mention_to'] << user
+            mention_to << user
 
             name = user['name']
           end
@@ -169,7 +168,7 @@ module Ruboty
           "@#{name}"
         end
 
-        data['text'].gsub!(/\<!subteam\^(?<usergroup_id>[0-9A-Z]+)(?:\|(?<handle>[^>]+))?\>/) do |_|
+        text.gsub!(/\<!subteam\^(?<usergroup_id>[0-9A-Z]+)(?:\|(?<handle>[^>]+))?\>/) do |_|
           handle = Regexp.last_match[:handle]
 
           unless handle
@@ -179,16 +178,16 @@ module Ruboty
           "#{handle}"
         end
 
-        data['text'].gsub!(/\<!(?<special>[^>|@]+)(\|\@[^>]+)?\>/) do |_|
+        text.gsub!(/\<!(?<special>[^>|@]+)(\|\@[^>]+)?\>/) do |_|
           "@#{Regexp.last_match[:special]}"
         end
 
-        data['text'].gsub!(/\<((?<link>[^>|]+)(?:\|(?<ref>[^>]*))?)\>/) do |_|
+        text.gsub!(/\<((?<link>[^>|]+)(?:\|(?<ref>[^>]*))?)\>/) do |_|
           Regexp.last_match[:ref] || Regexp.last_match[:link]
         end
 
 
-        data['text'].gsub!(/\#(?<room_id>[A-Z0-9]+)/) do |_|
+        text.gsub!(/\#(?<room_id>[A-Z0-9]+)/) do |_|
           room_id = Regexp.last_match[:room_id]
           msg = "##{room_id}"
 
@@ -199,7 +198,7 @@ module Ruboty
           msg
         end
 
-        data
+        [CGI.unescapeHTML(text), mention_to]
       end
 
       def resolve_send_mention(text)
