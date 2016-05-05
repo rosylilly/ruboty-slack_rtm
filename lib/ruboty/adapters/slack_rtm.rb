@@ -123,6 +123,8 @@ module Ruboty
         )
       end
 
+      alias on_bot_message on_message
+
       def on_channel_change(data)
         make_channels_cache
       end
