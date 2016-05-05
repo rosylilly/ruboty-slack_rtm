@@ -104,7 +104,7 @@ module Ruboty
 
         channel = channel_info(data['channel'])
 
-        if data['type'] == 'bot_message' && ENV['SLACK_IGNORE_BOT_MESSAGE'] == '1'
+        if data['subtype'] == 'bot_message' && ENV['SLACK_IGNORE_BOT_MESSAGE'] == '1'
           return
         end
 
