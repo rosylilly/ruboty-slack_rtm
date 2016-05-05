@@ -129,7 +129,7 @@ module Ruboty
         robot.receive(message_info.merge(body: CGI.unescapeHTML(data['text'])))
 
         (data['attachments'] || []).each do |attachment|
-          body = (attachments['fallback'] || "#{attachment['text']} #{attachment['pretext']}")
+          body = attachment['fallback'] || "#{attachment['text']} #{attachment['pretext']}"
 
           robot.receive(message_info.merge(body: CGI.unescapeHTML(body))) unless body.empty?
         end
