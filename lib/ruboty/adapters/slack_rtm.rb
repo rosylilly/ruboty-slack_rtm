@@ -126,6 +126,33 @@ module Ruboty
           mention_to: data['mention_to'],
           time: Time.at(data['ts'].to_f)
         )
+
+        (data['attachments'] || []).each do |attachment|
+          pretext = attachment['pretext'].to_s
+          text = attachment['text'].to_s
+
+          robot.receive(
+            body: CGI.unescapeHTML(pretext),
+            from: data['channel'],
+            from_name: user['name'],
+            to: channel_to,
+            channel: channel,
+            user: user,
+            mention_to: data['mention_to'],
+            time: Time.at(data['ts'].to_f)
+          ) if pretext.size > 0
+
+          robot.receive(
+            body: CGI.unescapeHTML(text),
+            from: data['channel'],
+            from_name: user['name'],
+            to: channel_to,
+            channel: channel,
+            user: user,
+            mention_to: data['mention_to'],
+            time: Time.at(data['ts'].to_f)
+          ) if text.size > 0
+        end
       end
 
       def on_channel_change(data)
