@@ -104,7 +104,7 @@ module Ruboty
 
         channel = channel_info(data['channel'])
 
-        if data['type'] == 'bot_message' && ENV['SLACK_IGNORE_BOT_MESSAGE'] == '1'
+        if data['subtype'] == 'bot_message' && ENV['SLACK_IGNORE_BOT_MESSAGE'] == '1'
           return
         end
 
@@ -127,8 +127,6 @@ module Ruboty
           time: Time.at(data['ts'].to_f)
         )
       end
-
-      alias on_bot_message on_message
 
       def on_channel_change(data)
         make_channels_cache
