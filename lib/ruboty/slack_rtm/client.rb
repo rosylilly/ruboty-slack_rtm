@@ -4,6 +4,8 @@ require 'websocket-client-simple'
 module Ruboty
   module SlackRTM
     class Client
+      CONNECTION_CLOSED = Object.new
+
       def initialize(websocket_url:)
         @client = create_client(websocket_url.to_s)
 
@@ -36,6 +38,9 @@ module Ruboty
 
         loop do
           message = @queue.deq
+          if message.equal?(CONNECTION_CLOSED)
+            break
+          end
           @client.send(message)
         end
       end
@@ -46,6 +51,10 @@ module Ruboty
         WebSocket::Client::Simple.connect(url, verify_mode: OpenSSL::SSL::VERIFY_PEER).tap do |client|
           client.on(:error) do |err|
             Ruboty.logger.error("#{err.class}: #{err.message}\n#{err.backtrace.join("\n")}")
+          end
+          client.on(:close) do
+            Ruboty.logger.info('Disconnected')
+            @queue.enq(CONNECTION_CLOSED)
           end
         end
       end
