@@ -16,6 +16,7 @@ module Ruboty
         init
         bind
         connect
+        # TODO: reconnect
       end
 
       def say(message)
