@@ -52,9 +52,12 @@ module Ruboty
           client.on(:error) do |err|
             Ruboty.logger.error("#{err.class}: #{err.message}\n#{err.backtrace.join("\n")}")
           end
+          queue = @queue
           client.on(:close) do
             Ruboty.logger.info('Disconnected')
-            @queue.enq(CONNECTION_CLOSED)
+            # XXX: This block is called via BasicObject#instance_exec from
+            # EventEmitter, so `@queue` isn't visible here.
+            queue.enq(CONNECTION_CLOSED)
           end
         end
       end
