@@ -1,5 +1,6 @@
 require 'cgi'
 require 'time'
+require 'json'
 require 'slack'
 require 'ruboty/adapters/base'
 
@@ -27,12 +28,23 @@ module Ruboty
 
         return unless channel
 
-        realtime.send_message(
-          type: 'message',
-          channel: channel,
-          text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
-          mrkdwn: true
-        )
+        if message[:attachments] && !message[:attachments].empty?
+          client.chat_postMessage(
+            channel: channel,
+            text: message[:code] ?  "```\n#{message[:body]}\n```" : message[:body],
+            parse: 'full',
+            unfurl_links: true,
+            as_user: true,
+            attachments: message[:attachments].to_json
+          )
+        else
+          realtime.send_message(
+            type: 'message',
+            channel: channel,
+            text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
+            mrkdwn: true
+          )
+        end
       end
 
       private
