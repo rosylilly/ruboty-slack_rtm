@@ -32,7 +32,7 @@ module Ruboty
           client.chat_postMessage(
             channel: channel,
             text: message[:code] ?  "```\n#{message[:body]}\n```" : message[:body],
-            parse: 'full',
+            parse: message[:parse] || 'full',
             unfurl_links: true,
             as_user: true,
             attachments: message[:attachments].to_json
