@@ -7,9 +7,8 @@ module Ruboty
       CONNECTION_CLOSED = Object.new
 
       def initialize(websocket_url:)
-        @client = create_client(websocket_url.to_s)
-
         @queue = Queue.new
+        @client = create_client(websocket_url.to_s)
       end
 
       def send_message(data)
