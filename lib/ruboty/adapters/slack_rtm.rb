@@ -82,7 +82,7 @@ module Ruboty
 
       def url
         @url ||= begin
-          response = Net::HTTP.post_form(URI.parse('https://slack.com/api/rtm.start'), token: ENV['SLACK_TOKEN'])
+          response = Net::HTTP.post_form(URI.parse('https://slack.com/api/rtm.connect'), token: ENV['SLACK_TOKEN'])
           body = JSON.parse(response.body)
 
           URI.parse(body['url'])
