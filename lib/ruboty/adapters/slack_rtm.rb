@@ -47,6 +47,10 @@ module Ruboty
         end
       end
 
+      def add_reaction(reaction, channel_id, timestamp)
+        client.reactions_add(name: reaction, channel: channel_id, timestamp: timestamp)
+      end
+
       private
 
       def init
