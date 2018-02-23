@@ -16,6 +16,7 @@ gem 'ruboty-slack_rtm'
 - `SLACK_EXPOSE_CHANNEL_NAME`: if this set to 1, `message.to` will be channel name instead of id (optional)
 - `SLACK_IGNORE_GENERAL`: if this set to 1, bot ignores all messages on #general channel (optional)
 - `SLACK_GENERAL_NAME`: Set general channel name if your Slack changes general name (optional)
+- `SLACK_AUTO_RECONNECT`: Enable auto reconnect if rtm disconnected by Slack (optional)
 
 This adapter doesn't require a real user account. Using with bot integration's API token is recommended.
 See: https://api.slack.com/bot-users

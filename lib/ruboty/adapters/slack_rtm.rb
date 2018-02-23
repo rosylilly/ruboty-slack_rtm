@@ -12,12 +12,12 @@ module Ruboty
       env :SLACK_IGNORE_BOT_MESSAGE, "If this set to 1, bot ignores bot_messages", optional: true
       env :SLACK_IGNORE_GENERAL, "if this set to 1, bot ignores all messages on #general channel", optional: true
       env :SLACK_GENERAL_NAME, "Set general channel name if your Slack changes general name", optional: true
+      env :SLACK_AUTO_RECONNECT, "Enable auto reconnect", optional: true
 
       def run
         init
         bind
         connect
-        # TODO: reconnect
       end
 
       def say(message)
@@ -81,7 +81,12 @@ module Ruboty
           end
         end
 
-        realtime.main_loop
+        loop do
+          realtime.main_loop rescue nil
+          break unless ENV['SLACK_AUTO_RECONNECT']
+          @url = null
+          @realtime = null
+        end
       end
 
       def url
