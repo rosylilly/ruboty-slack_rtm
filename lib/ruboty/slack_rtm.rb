@@ -1,5 +1,5 @@
 require 'ruboty/slack_rtm/version'
 require 'ruboty/slack_rtm/client'
 require 'ruboty/adapters/slack_rtm'
-require_relative 'robot'
-require_relative 'message'
+require 'ruboty/slack_rtm/robot'
+require 'ruboty/slack_rtm/message'
