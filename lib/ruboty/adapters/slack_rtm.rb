@@ -84,8 +84,8 @@ module Ruboty
         loop do
           realtime.main_loop rescue nil
           break unless ENV['SLACK_AUTO_RECONNECT']
-          @url = null
-          @realtime = null
+          @url = nil
+          @realtime = nil
         end
       end
 
