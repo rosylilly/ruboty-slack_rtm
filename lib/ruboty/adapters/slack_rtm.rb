@@ -3,6 +3,7 @@ require 'time'
 require 'json'
 require 'slack'
 require 'ruboty/adapters/base'
+require 'faraday'
 
 module Ruboty
   module Adapters
@@ -36,6 +37,16 @@ module Ruboty
             unfurl_links: true,
             as_user: true,
             attachments: message[:attachments].to_json
+          )
+        elsif message[:file]
+          path = message[:file][:path]
+          client.files_upload(
+            channels: channel,
+            as_user: true,
+            file: Faraday::UploadIO.new(path, message[:file][:content_type]),
+            title: message[:file][:title] || path,
+            filename: File.basename(path),
+            initial_comment: message[:body] || ''
           )
         else
           realtime.send_message(
