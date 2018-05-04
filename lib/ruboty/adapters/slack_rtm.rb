@@ -49,10 +49,10 @@ module Ruboty
             initial_comment: message[:body] || ''
           )
         else
-          realtime.send_message(
-            type: 'message',
+          client.chat_postMessage(
             channel: channel,
             text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
+            as_user: true,
             mrkdwn: true
           )
         end
