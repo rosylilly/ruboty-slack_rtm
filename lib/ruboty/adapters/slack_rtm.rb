@@ -241,7 +241,7 @@ module Ruboty
           msg = "@#{mention}"
 
           @user_info_caches.each_pair do |id, user|
-            if user['name'].downcase == mention.downcase
+            if [user['name'].downcase, user['profile']['display_name'].downcase].include?(mention.downcase)
               msg = "<@#{id}>"
             end
           end
