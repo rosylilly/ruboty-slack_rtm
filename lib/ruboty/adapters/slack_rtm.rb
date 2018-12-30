@@ -97,6 +97,8 @@ module Ruboty
           break unless ENV['SLACK_AUTO_RECONNECT']
           @url = nil
           @realtime = nil
+          sleep 3
+          bind
         end
       end
 
