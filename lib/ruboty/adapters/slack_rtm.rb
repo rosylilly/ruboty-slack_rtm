@@ -36,7 +36,8 @@ module Ruboty
             parse: message[:parse] || 'full',
             unfurl_links: true,
             as_user: true,
-            attachments: message[:attachments].to_json
+            attachments: message[:attachments].to_json,
+            thread_ts: message[:thread_ts] || message[:original][:thread_ts]
           )
         elsif message[:file]
           path = message[:file][:path]
@@ -46,14 +47,16 @@ module Ruboty
             file: Faraday::UploadIO.new(path, message[:file][:content_type]),
             title: message[:file][:title] || path,
             filename: File.basename(path),
-            initial_comment: message[:body] || ''
+            initial_comment: message[:body] || '',
+            thread_ts: message[:thread_ts] || message[:original][:thread_ts]
           )
         else
           client.chat_postMessage(
             channel: channel,
             text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
             as_user: true,
-            mrkdwn: true
+            mrkdwn: true,
+            thread_ts: message[:thread_ts] || message[:original][:thread_ts]
           )
         end
       end
@@ -156,6 +159,8 @@ module Ruboty
           to: channel_to,
           channel: channel,
           user: user,
+          ts: data['ts'],
+          thread_ts: data['thread_ts'],
           time: Time.at(data['ts'].to_f)
         }
 
