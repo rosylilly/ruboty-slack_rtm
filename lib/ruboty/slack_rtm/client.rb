@@ -65,7 +65,13 @@ module Ruboty
         Thread.start do
           loop do
             sleep(30)
-            @client.send('', type: 'ping')
+            begin
+              @client.send('', type: 'ping')
+            rescue => e
+              Ruboty.logger.error("#{e.class}: #{e.message}\n#{e.backtrace.join("\n")}")
+              @queue.enq(CONNECTION_CLOSED)
+              break
+            end
           end
         end
       end
