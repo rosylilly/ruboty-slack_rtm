@@ -30,7 +30,6 @@ module Ruboty
         return unless channel
 
         args = {
-          channel: channel,
           as_user: true
         }
         if message[:thread_ts] || (message[:original] && message[:original][:thread_ts])
@@ -39,6 +38,7 @@ module Ruboty
 
         if message[:attachments] && !message[:attachments].empty?
           args.merge!(
+            channel: channel,
             text: message[:code] ? "```\n#{message[:body]}\n```" : message[:body],
             parse: message[:parse] || 'full',
             unfurl_links: true,
@@ -48,6 +48,7 @@ module Ruboty
         elsif message[:file]
           path = message[:file][:path]
           args.merge!(
+            channels: channel,
             file: Faraday::UploadIO.new(path, message[:file][:content_type]),
             title: message[:file][:title] || path,
             filename: File.basename(path),
@@ -56,6 +57,7 @@ module Ruboty
           client.files_upload(args)
         else
           args.merge!(
+            channel: channel,
             text: message[:code] ? "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
             mrkdwn: true
           )
