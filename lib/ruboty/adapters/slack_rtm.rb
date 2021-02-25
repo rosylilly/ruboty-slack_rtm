@@ -329,7 +329,7 @@ module Ruboty
         @channel_info_caches[channel_id] ||= begin
           resp = case channel_id
             when /^C/
-              client.channels_info(channel: channel_id)
+              client.conversations_info(channel: channel_id)
             else
               {}
             end
