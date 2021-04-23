@@ -29,35 +29,39 @@ module Ruboty
 
         return unless channel
 
+        args = {
+          as_user: true
+        }
+        if message[:thread_ts] || (message[:original] && message[:original][:thread_ts])
+          args.merge!(thread_ts: message[:thread_ts] || message[:original][:thread_ts])
+        end
+
         if message[:attachments] && !message[:attachments].empty?
-          client.chat_postMessage(
+          args.merge!(
             channel: channel,
-            text: message[:code] ?  "```\n#{message[:body]}\n```" : message[:body],
+            text: message[:code] ? "```\n#{message[:body]}\n```" : message[:body],
             parse: message[:parse] || 'full',
             unfurl_links: true,
-            as_user: true,
-            attachments: message[:attachments].to_json,
-            thread_ts: message[:thread_ts] || message[:original][:thread_ts]
+            attachments: message[:attachments].to_json
           )
+          client.chat_postMessage(args)
         elsif message[:file]
           path = message[:file][:path]
-          client.files_upload(
+          args.merge!(
             channels: channel,
-            as_user: true,
             file: Faraday::UploadIO.new(path, message[:file][:content_type]),
             title: message[:file][:title] || path,
             filename: File.basename(path),
-            initial_comment: message[:body] || '',
-            thread_ts: message[:thread_ts] || message[:original][:thread_ts]
+            initial_comment: message[:body] || ''
           )
+          client.files_upload(args)
         else
-          client.chat_postMessage(
+          args.merge!(
             channel: channel,
-            text: message[:code] ?  "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
-            as_user: true,
-            mrkdwn: true,
-            thread_ts: message[:thread_ts] || message[:original][:thread_ts]
+            text: message[:code] ? "```\n#{message[:body]}\n```" : resolve_send_mention(message[:body]),
+            mrkdwn: true
           )
+          client.chat_postMessage(args)
         end
       end
 
