@@ -246,6 +246,7 @@ module Ruboty
       end
 
       def resolve_send_mention(text)
+        return '' if text.nil?
         text = text.dup.to_s
         text.gsub!(/@(?<mention>[0-9a-z._-]+)/) do |_|
           mention = Regexp.last_match[:mention]
